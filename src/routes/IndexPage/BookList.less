@@ -1,0 +1,33 @@
+.books {
+  display: flex;
+  padding: 20px;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.book{
+  height: 160px;
+  width: 90px;
+  display: block;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  .cover{
+    height: 120px;
+    width: 90px;
+    background-size: 100% 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  p {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    margin-top: 6px;
+    font-weight: 100px;
+    font-size: 12px;
+    max-width: 90px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+}
