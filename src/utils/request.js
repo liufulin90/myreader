@@ -1,3 +1,5 @@
+import 'fetch-polyfill';
+
 export default function request(url, options) {
   return fetch(url, options)
     .then((response) => {
