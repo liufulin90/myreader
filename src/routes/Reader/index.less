@@ -1,7 +1,107 @@
+.btnMainBase{
+  position: absolute;
+  bottom: 55px;
+  right: 10px;
+  width: 45px;
+  height: 45px;
+  background-color: #ff5722;
+  border-radius: 50%;
+  line-height: 40px;
+  font-size: 40px;
+  text-align: center;
+  color: #ffffff;
+  overflow: hidden;
+  padding: 0px;
+}
 .reader {
   background: #fff;
   color: rgba(0, 0, 0, 0.5);
   a {
     color: rgba(0, 0, 0, 0.5);
+  }
+  .fixedMenu {
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    bottom: 0;
+    position: fixed;
+    height: 40px;
+    width: 410px;
+    .ballWrap{
+      height: 60px;
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      transform:  scale(1, 1);
+      animation: navMenuAnimationOpen .5s;
+    }
+    .ballWrapClose{
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      transform: scale(0, 0);
+      animation: navMenuAnimationClose .3s;
+    }
+    .ball {
+      color: #ffffff;
+      font-size: 14px;
+      width: 58px;
+      height: 58px;
+      display: block;
+      line-height: 58px;
+      text-align: center;
+      justify-items: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #ff5722;
+      opacity: 0.9;
+      &first-child {
+        line-height: 16px;
+      }
+    }
+    .btnMain {
+      &:extend(.btnMainBase);
+      transform: rotate(135deg);
+      animation: navBtnMainAnimationOpen .7s;
+    }
+    .btnMainClose{
+      &:extend(.btnMainBase);
+      transform: rotate(0deg);
+      animation: navBtnMainAnimationClose .5s;
+    }
+  }
+}
+
+// 菜单动画
+@keyframes navMenuAnimationOpen{
+  from{transform: scale(0, 0);}
+  to{transform: scale(1, 1);}
+}
+@keyframes navMenuAnimationClose{
+  from{transform: scale(1, 1);}
+  to{transform: scale(0, 0);}
+}
+
+// 展开按钮动画
+@keyframes navBtnMainAnimationOpen{
+  from{transform: rotate(0deg);}
+  to{transform: rotate(135deg);}
+}
+@keyframes navBtnMainAnimationClose{
+  from{transform: rotate(135deg);}
+  to{transform: rotate(0deg);}
+}
+
+@media screen and (max-width: 450px) {
+  .reader {
+    .fixedMenu {
+      width: 100%;
+      padding: 0;
+      height: 60px;
+      .btnMain {
+        bottom: 65px;
+        right: 10px;
+      }
+    }
   }
 }

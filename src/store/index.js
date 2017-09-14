@@ -18,8 +18,7 @@ const store = createStore(
   ),
 );
 
-console.log('store');
-console.log(store);
+console.log('store', store);
 
 persistStore(store, { whitelist: ['store', 'reader', 'setting'] });
 

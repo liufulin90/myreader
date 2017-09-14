@@ -124,10 +124,15 @@ function* reStore({ payload }) {
   }
 }
 
+function* changeMenu({ payload }) {
+  yield put({ type: 'reader/save', payload: { menuState: payload.menuState } });
+}
+
 export default [
   takeLatest(REHYDRATE, reStore),
   takeLatest('reader/getSource', getSource),
   takeLatest('reader/getChapterList', getChapterList),
   takeLatest('reader/getChapter', getChapter),
   takeLatest('reader/goToChapter', goToChapter),
+  takeLatest('reader/changeMenu', changeMenu),
 ];

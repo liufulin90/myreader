@@ -41,6 +41,84 @@ class Search extends Component {
   componentDidMount() {
     window.scrollTo(0, 0);
   }
+
+  /**
+   * 普通的menu，显示在内容底部
+   * @returns {XML}
+   */
+  optionsMenuNormal = () => {
+    const {
+      style,
+      mode,
+      dispatch,
+    } = this.props;
+
+    return (<div style={{
+      padding: 20,
+      display: 'flex',
+      justifyContent: 'space-around',
+      marginTop: 10,
+      borderTop: '1px dashed rgba(0, 0,0, 0.1)',
+    }}
+    >
+      <Setting
+        mode={mode}
+        style={style}
+        dispatch={dispatch}
+      >
+        <span>设置</span>
+      </Setting>
+      <span onClick={this.goToChapters}>章节列表</span>
+      <span onClick={this.prev}>上一章</span>
+      <span onClick={this.next}>下一章</span>
+    </div>);
+  }
+
+  /**
+   * 悬浮的menu，点击伸缩展开
+   * @returns {XML}
+   */
+  optionsMenuFixed = () => {
+    const {
+      style,
+      mode,
+      dispatch,
+      menuState,
+    } = this.props;
+    return (<div
+      className={styles.fixedMenu}
+    >
+      <div
+        className={menuState ? styles.btnMain : styles.btnMainClose}
+        onClick={this.changeMenu}
+      >+
+      </div>
+      <div className={menuState ? styles.ballWrap : styles.ballWrapClose}>
+        <span onClick={this.goToChapters} className={styles.ball}>章节列表</span>
+        <span onClick={this.prev} className={styles.ball}>上一章</span>
+        <span onClick={this.next} className={styles.ball}>下一章</span>
+        <Setting
+          mode={mode}
+          style={style}
+          dispatch={dispatch}
+          className={styles.ball}
+        >
+          <span className={styles.ball}>设置</span>
+        </Setting>
+      </div>
+    </div>);
+  }
+  /**
+   * 点击展开关闭菜单
+   */
+  changeMenu = () => {
+    const { menuState } = this.props;
+    this.props.dispatch({
+      type: 'reader/changeMenu',
+      payload: { menuState: !menuState },
+    });
+  }
+
   render() {
     const {
       chapter = {},
@@ -48,9 +126,9 @@ class Search extends Component {
       logs = [],
       color = {},
       style,
-      mode,
+      // mode,
       history,
-      dispatch,
+      // dispatch,
     } = this.props;
     return (<div className={styles.reader} style={color}>
       {
@@ -58,42 +136,23 @@ class Search extends Component {
           <Head title={chapter.title} bookName={detail.title} history={history} color={color} />
           <Content style={style} content={chapter.body} />
 
-          <div style={{
-            padding: 20,
-            display: 'flex',
-            justifyContent: 'space-around',
-            marginTop: 10,
-            borderTop: '1px dashed rgba(0, 0,0, 0.1)',
-          }}
-          >
-            <Setting
-              mode={mode}
-              style={style}
-              dispatch={dispatch}
-            >
-              <span>设置</span>
-            </Setting>
-            <span onClick={this.goToChapters}>章节列表</span>
-            <span onClick={this.prev}>上一章</span>
-            <span onClick={this.next}>下一章</span>
-          </div>
+          {this.optionsMenuFixed()}
 
         </div> : <Loading logs={logs} />
-
       }
-
     </div>);
   }
 }
 
 function mapStateToProps(state) {
-  const { chapter, currentChapter = 0, detail } = state.reader;
+  const { chapter, currentChapter = 0, detail, menuState } = state.reader;
   const { logs } = state.common;
   return {
     logs,
     chapter,
     detail,
     currentChapter,
+    menuState,
     ...state.setting,
   };
 }

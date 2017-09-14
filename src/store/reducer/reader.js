@@ -5,6 +5,7 @@ const initState = {
   chapters: [],       // 章节列表
   chapter: {},        // 当前章节
   detail: {},         // 书籍详情
+  menuState: false,   // 底部菜单是否展开
 };
 
 function reader(state = initState, action) {
