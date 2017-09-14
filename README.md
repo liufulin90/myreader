@@ -249,8 +249,6 @@ function* goToChapter({ payload }) {
 
 上半部分是当前阅读书籍，仅显示一些关键信息。下半部分是书架，存放以往的阅读进度。
 
-![图层 2](http://ooi7vpwhj.bkt.clouddn.com/图层 2.png)
-
 从redux获取数据
 
 ```javascript
