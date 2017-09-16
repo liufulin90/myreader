@@ -84,6 +84,8 @@ class Search extends Component {
       mode,
       dispatch,
       menuState,
+      currentChapter,
+      chapters,
     } = this.props;
     return (<div
       className={styles.fixedMenu}
@@ -95,8 +97,14 @@ class Search extends Component {
       </div>
       <div className={menuState ? styles.ballWrap : styles.ballWrapClose}>
         <span onClick={this.goToChapters} className={styles.ball}>章节列表</span>
-        <span onClick={this.prev} className={styles.ball}>上一章</span>
-        <span onClick={this.next} className={styles.ball}>下一章</span>
+        <span
+          onClick={this.prev}
+          className={currentChapter < 1 ? styles.ballPreOff : styles.ballPreOn}
+        >上一章</span>
+        <span
+          onClick={this.next}
+          className={currentChapter >= chapters.length - 1 ? styles.ballNextOff : styles.ballNextOn}
+        >下一章</span>
         <Setting
           mode={mode}
           style={style}
@@ -145,11 +153,12 @@ class Search extends Component {
 }
 
 function mapStateToProps(state) {
-  const { chapter, currentChapter = 0, detail, menuState } = state.reader;
+  const { chapter, chapters, currentChapter = 0, detail, menuState } = state.reader;
   const { logs } = state.common;
   return {
     logs,
     chapter,
+    chapters,
     detail,
     currentChapter,
     menuState,

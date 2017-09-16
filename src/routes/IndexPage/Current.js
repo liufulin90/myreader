@@ -14,7 +14,7 @@ export default ({ _id, cover, title, lastChapter, author, wordCount, latelyFollo
   >
     <div className={styles.wrap}>
       <h1 className={styles.title}>
-        myReader
+        MyReader
         <div className={styles.search} onClick={search}>
           <img className={styles.icon} src={SearchIcon} alt="" />
           Search

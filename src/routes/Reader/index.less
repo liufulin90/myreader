@@ -13,6 +13,25 @@
   overflow: hidden;
   padding: 0px;
 }
+
+.ball {
+  color: #ffffff;
+  font-size: 14px;
+  width: 58px;
+  height: 58px;
+  display: block;
+  line-height: 58px;
+  text-align: center;
+  justify-items: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #ff5722;
+  opacity: 0.9;
+  &first-child {
+    line-height: 16px;
+  }
+}
+
 .reader {
   background: #fff;
   color: rgba(0, 0, 0, 0.5);
@@ -42,22 +61,12 @@
       transform: scale(0, 0);
       animation: navMenuAnimationClose .3s;
     }
-    .ball {
-      color: #ffffff;
-      font-size: 14px;
-      width: 58px;
-      height: 58px;
-      display: block;
-      line-height: 58px;
-      text-align: center;
-      justify-items: center;
-      align-items: center;
-      border-radius: 50%;
-      background-color: #ff5722;
-      opacity: 0.9;
-      &first-child {
-        line-height: 16px;
-      }
+    .ballPreOn, .ballNextOn{
+      &:extend(.ball);
+    }
+    .ballPreOff, .ballNextOff{
+      &:extend(.ball);
+      background-color: #a3b5be;
     }
     .btnMain {
       &:extend(.btnMainBase);
