@@ -1,4 +1,5 @@
 const initState = {
+  id: null,           // 当前书籍id，默认没有书籍
   currentSource: 1,   // 当前源下标：默认为1，跳过优质书源
   currentChapter: 0,  // 当前章节下标
   source: [],         // 源列表

@@ -4,7 +4,7 @@ import * as readerServices from '../../services/reader.js';
 function* search({ query }) {
   try {
     const data = yield call(readerServices.search, query.query);
-    yield put({ type: 'search/save', payload: { list: data.books || [] } });
+    yield put({ type: 'search/save', payload: { list: data.books || [], status: data.ok || true } });
   } catch (error) {
     console.log(error);
   }

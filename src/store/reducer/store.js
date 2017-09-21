@@ -1,7 +1,7 @@
 
 function store(state = {}, action) {
   switch (action.type) {
-    case 'store/put': {
+    case 'store/put': { // 将书籍放入书架
       if (action.key) {
         return {
           ...state,
@@ -16,17 +16,17 @@ function store(state = {}, action) {
         };
       }
     }
-    case 'store/save':
+    case 'store/save': // 初始化书架
       return {
         ...state,
         ...action.payload,
       };
-    case 'store/delete':
+    case 'store/delete': // 删除书籍
       return {
         ...state,
         [action.key]: undefined,
       };
-    case 'store/clear':
+    case 'store/clear': // 清空书架
       return {};
     default:
       return {

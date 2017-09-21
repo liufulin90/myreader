@@ -21,29 +21,40 @@ class Search extends Component {
     };
   }
   componentWillMount() {
-    console.log(this);
+    const { status, list } = this.props;
+    this.props.dispatch({
+      type: 'search/save',
+      payload: {
+        status: false,
+        list: status ? list : [],
+      },
+    });
   }
   componentDidMount() {
     this.input.input.focus();
-    console.log(this.input);
+  }
+  renderList = (list, status) => {
+    if (status && !list.length) {
+      return (<div style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.5)' }}>哦噢，没找到你想要的呢 ╮(￣▽￣)╭ </div>);
+    }
+    return list.map(i => (<div onClick={this.goToDetail.bind(this, i._id)} key={i._id}>
+      <Item {...i} />
+    </div>));
   }
   render() {
-    const { list = [], history } = this.props;
+    const { list = [], status, history } = this.props;
     return (<div>
       <SearchBar ref={(c) => { this.input = c; }} history={history} onSubmit={this.search} />
-      {
-        list.map(i => (<div onClick={this.goToDetail.bind(this, i._id)} key={i._id}>
-          <Item {...i} />
-        </div>))
-      }
+      {this.renderList(list, status)}
     </div>);
   }
 }
 
 function mapStateToProps(state) {
-  const { list } = state.search;
+  const { list, status } = state.search;
   return {
     list,
+    status,
   };
 }
 

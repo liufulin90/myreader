@@ -26,7 +26,7 @@ class SearchBar extends Component {
       <form className={styles.search} action="" onSubmit={this.onSubmit}>
         <div className={styles.box}>
           <div className={styles.input}>
-            <img className={styles.icon} src="http://7xiy7w.com1.z0.glb.clouddn.com/search%20%282%29.svg" alt="" />
+            <div className={styles.icon}>&nbsp;</div>
             <input type={type || 'search'} onChange={this.onChange} ref={(c) => { this.input = c; }} id="text" placeholder="输入关键字搜索" />
           </div>
           <span className={styles.cancel} onClick={this.cancel}>取消</span>

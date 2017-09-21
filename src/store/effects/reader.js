@@ -5,9 +5,14 @@ import * as readerServices from '../../services/reader.js';
 
 // console.log = log;
 
+/**
+ * 获取书源
+ * @param query
+ */
 function* getSource({ query }) {
   try {
     const { id } = query;
+    // 这里获得整个缓存中的store，并对应上reader的store。其reader的store结构参考store/reducer/reader.js initState
     const { reader: { id: currentId, detail: { title } } } = yield select();
     if (currentId) {
       if (id !== currentId) {
@@ -39,11 +44,15 @@ function* getSource({ query }) {
   }
 }
 
+/**
+ * 章节列表
+ */
 function* getChapterList() {
   try {
     const { reader: { source, currentSource } } = yield select();
+    console.log('获取章节列表', currentSource, source.length, JSON.stringify(source));
     if (currentSource >= source.length) {
-      console.log('什么鬼？');
+      console.log('走到这里说明所有书源都已经切换完了');
       yield put({ type: 'reader/save', payload: { currentSource: 0 } });
       yield getChapterList();
       return;
@@ -58,6 +67,9 @@ function* getChapterList() {
   }
 }
 
+/**
+ * 获取章节内容
+ */
 function* getChapter() {
   try {
     const { reader: { chapters, currentChapter } } = yield select();
@@ -76,6 +88,10 @@ function* getChapter() {
   }
 }
 
+/**
+ * 跳转至章节内容
+ * @param payload
+ */
 function* goToChapter({ payload }) {
   try {
     const { reader: { chapters } } = yield select();
@@ -95,11 +111,15 @@ function* goToChapter({ payload }) {
   }
 }
 
+/**
+ * 获取下一个书源。
+ * 在获取书源后无法获取 具体章节 便会获取下一个书源。直到所有书源换完为止
+ */
 function* getNextSource() {
   try {
     const { reader: { source, currentSource } } = yield select();
     let nextSource = (currentSource || 1) + 1;
-    console.log(nextSource);
+    console.log(`开始第${nextSource}个书源`);
     if (nextSource >= source.length) {
       console.log('没有可用书源,切换回优质书源');
       nextSource = 0;
