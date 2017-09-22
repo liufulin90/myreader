@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>封装模板引擎</title>
+</head>
+<body>
+  <div id="app"></div>
+  <hr>
+  <div id="appfor"></div>
+
+  <script>
+    var Util = {
+      _$: function (id) {
+        return document.getElementById(id);
+      },
+      ajax: function (url, success) {
+        // 创建请求xhr对象
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (this.readyState === 4) {
+            if (this.status === 200) {
+              // 成功回调
+              typeof success === 'function' && success(JSON.parse(this.responseText))
+            }
+          }
+        }
+        // 打开连接 true: 异步
+        xhr.open('get', url, true);
+        // 开始发送
+        xhr.send(null);
+      },
+      /**
+       *
+       * @param appid 需要将模板数据渲染到的容器
+       * @param tplID 模板id
+       * @param data 传入的数据
+       * @returns {*}
+       */
+      tplParse: function (appid, tplID, data) {
+        var tpl = Util._$(tplID).innerHTML;
+        // 模板进入循环 以 {#each 开头 {#\/each#\} 结尾的模板单做循环处理
+        var retHtml = '';
+        if (/\{#each([\w\W]*)\{#\/each#\}/.test(tpl)) {
+          // 该模板只能处理一维数组
+          // 如果不是数组直接抛出异常
+          if (typeof data !== 'object' || !(data instanceof Array)) {
+            throw new Error('1st argument must array');
+          }
+          // 处理循环头部，计算出要循环的数组中对象
+          var eachPre = tpl.trim().split(/\{#each (\w+)#\}/i);
+          var eachWrap = tpl.trim().split(/\{#each (\w+)#\}([\w\W]*)\{#\/each#\}/g);
+          var innerTpl = eachWrap[2];
+          //循环对象
+          var dataObjStr = eachPre[1];
+          // 对象获取值正则
+          var reg = new RegExp("\{#" + dataObjStr + ".(\\w+)#\}", "g");
+          data.map(function (item) {
+            //循环替换模板中的值
+            retHtml += innerTpl.replace(reg, function (match, $1) {
+              return item[$1];
+            });
+          })
+        } else {
+          // 如果不是数组直接抛出异常
+          if (typeof data !== 'object') {
+            throw new Error('1st argument must array');
+          }
+          // 普通模板处理， 只能传普通对象
+          retHtml = tpl.replace(/\{#(\w+)#\}/g, function (match, $1) {
+            return data[$1];
+          });
+        }
+        Util._$(appid).innerHTML = retHtml;
+      }
+    }
+
+    Util.ajax('data.json', function (res) {
+      Util.tplParse('app', 'app_tpl', res.data[0]);
+      Util.tplParse('appfor', 'app_tpl_for', res.data);
+    })
+  </script>
+
+  <script type="text/template" id="app_tpl">
+    <ul>
+      <li>{#title#}</li>
+      <li>{#price#}</li>
+      <li>{#sales#}</li>
+      <li>{#desc#}</li>
+    </ul>
+  </script>
+
+  <script type="text/template" id="app_tpl_for">
+    {#each item#}
+    <ul>
+      <li>{#item.title#}</li>
+      <li>{#item.price#}</li>
+      <li>{#item.sales#}</li>
+      <li>{#item.desc#}</li>
+    </ul>
+    {#/each#}
+  </script>
+
+</body>
+</html>

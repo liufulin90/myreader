@@ -17,6 +17,7 @@ class Chapters extends Component {
       });
       this.props.history.goBack();
     };
+    // 滑动顶部进度条
     this.skip = () => {
       setTimeout(() => {
         document.getElementById(this.range.value).scrollIntoView(false);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styles from './Setting.less';
 import { COLORS, MODE_COLOR } from '../../utils/constants.js';
 
-class Header extends Component {
+class Setting extends Component {
 
   constructor(props) {
     super(props);
@@ -31,7 +31,8 @@ class Header extends Component {
       e.preventDefault();
       return false;
     };
-    this.setting = (key, val) => {
+    // 设置主题颜色
+    this.setThemeColor = (key, val) => {
       this.props.dispatch({
         type: 'setting/save',
         payload: {
@@ -39,6 +40,7 @@ class Header extends Component {
         },
       });
     };
+    // 设置模式（白天/黑夜）
     this.setMode = () => {
       const mode = this.props.mode === 'day' ? 'night' : 'day';
       const color = MODE_COLOR[mode];
@@ -50,7 +52,8 @@ class Header extends Component {
         },
       });
     };
-    this.setStyle = (num) => {
+    // 调整字体大小
+    this.setFontSize = (num) => {
       const fontSize = this.props.style.fontSize + num;
       this.props.dispatch({
         type: 'setting/save',
@@ -78,8 +81,8 @@ class Header extends Component {
         <div onClick={this.stopEvent} className={`${styles.setting} ${styles[visible ? 'show' : 'hide']}`}>
           <div className={styles.buttons}>
             <span onClick={this.setMode}>{mode === 'day' ? '黑夜' : '白天'}</span>
-            <span onClick={this.setStyle.bind(this, 1)}>Aa+</span>
-            <span onClick={this.setStyle.bind(this, -1)}>Aa-</span>
+            <span onClick={this.setFontSize.bind(this, 1)}>Aa+</span>
+            <span onClick={this.setFontSize.bind(this, -1)}>Aa-</span>
             <span onClick={this.clear}>默认</span>
           </div>
           <div className={styles.colors}>
@@ -87,7 +90,7 @@ class Header extends Component {
               {
                 COLORS.map(i => (<span
                   style={i}
-                  onClick={this.setting.bind(this, 'color', i)}
+                  onClick={this.setThemeColor.bind(this, 'color', i)}
                 />))
               }
             </div>
@@ -98,4 +101,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default Setting;

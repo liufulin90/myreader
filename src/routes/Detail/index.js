@@ -5,7 +5,7 @@ import GaussianBlur from '../../components/GaussianBlur';
 import styles from './index.less';
 // import BackIcon from './back.svg';
 
-class Search extends Component {
+class Detail extends Component {
   constructor(props) {
     super(props);
     this.readNow = (id) => {
@@ -55,7 +55,6 @@ class Search extends Component {
             <p>{isSerial ? '连载中' : '已完结'}</p>
           </div>
         </div>
-
       </GaussianBlur>
       <div className={styles.body}>
         <p className={styles.desc}>{longIntro && longIntro.length > 40 ? `${longIntro.substring(0, 40)}...` : longIntro}</p>
@@ -82,4 +81,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Search);
+export default connect(mapStateToProps)(Detail);

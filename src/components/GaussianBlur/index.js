@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './style.less';
 
+// 高斯模糊组件（一种滤镜功能）
 export default ({
   children,
   src,

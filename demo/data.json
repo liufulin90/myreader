@@ -1,0 +1,35 @@
+{
+  "code": 20000,
+  "data": [
+    {
+      "title": "测试标题1",
+      "price": 212.58,
+      "sales": 1214,
+      "desc": "xxxxxxxxxxxxxasdfasdf"
+    },
+    {
+      "title": "测试标题2",
+      "price": 132.58,
+      "sales": 1201,
+      "desc": "xxxxxxxxxxxxxasdfasdf"
+    },
+    {
+      "title": "测试标题3",
+      "price": 412.58,
+      "sales": 2014,
+      "desc": "xxxxxxxxxxxxxasdfasdf"
+    },
+    {
+      "title": "测试标题4",
+      "price": 182.58,
+      "sales": 14,
+      "desc": "xxxxxxxxxxxxxasdfasdf"
+    },
+    {
+      "title": "测试标题5",
+      "price": 432.58,
+      "sales": 114,
+      "desc": "xxxxxxxxxxxxxasdfasdf"
+    }
+  ]
+}

@@ -33,7 +33,7 @@ function mapStateToProps(state) {
   });
   return {
     store,
-    // 如果是一本书都没有，推荐《三体》
+    // 如果是一本书都没有，推荐src/utils/recommond.js的第一个《斗破苍穹》
     current: detail._id ? detail : recommend,
   };
 }

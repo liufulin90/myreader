@@ -23,7 +23,7 @@ reader代表阅读器和当前书籍，这里我们跳过优质书源，原因�
 
 **阅读器**
 
-- store/reducer/reader.js
+- src/store/reducer/reader.js
 ```javascript
 const initState = {
   id: null,           // 当前书籍id，默认没有书籍
@@ -60,7 +60,7 @@ export default reader;
 
 为此，我们可以模仿现实中的书架来实现这个功能：前面提到的reader是当前正在阅读的书籍，它是完整的包含了一本书籍所有信息的个体，而书架则是很多个这样的个体的集合。因此切换书籍的动作，其实就是将书籍放回书架，再从书架中拿出一本书的过程，如果在书架中找到了这本书，便直接取出，进而得到上次阅读这本书的全部数据，如果没有找到这本书，就从服务器获取并初始化阅读器。
 
-- store/reducer/reader.js
+- src/store/reducer/reader.js
 ```javascript
 function store(state = {}, action) {
   switch (action.type) {
@@ -111,7 +111,7 @@ export default store;
 
 **获取书源**
 
-- store/effects/reader.js
+- src/store/effects/reader.js
 ```javascript
 /**
  * 获取书源
@@ -156,7 +156,7 @@ function* getSource({ query }) {
 **章节列表 & 章节内容**
 获取章节列表和章节内容比较简单，只需稍稍做些异常情况的处理即可。
 
-- store/effects/reader.js
+- src/store/effects/reader.js
 ```javascript
 function* getChapterList() {
   try {
@@ -202,7 +202,7 @@ function* getChapter() {
 
 换源其实就是操作标记书源的指针，这很容易，我们关心的是何时换源。经过测试，发现获取章节列表这一步几乎都没有问题，错误基本上是发生在获取`具体章节`这一步。因此，我们只要在章节列表中稍作判断即可实现自动换源。换源方法如下。
 
-- store/effects/reader.js
+- src/store/effects/reader.js
 ```javascript
 /**
  * 获取下一个书源。
@@ -233,6 +233,7 @@ function* getNextSource() {
 
 非常简单，稍微做下异常处理就好。
 
+- src/store/effects/reader.js
 ```javascript
 function* goToChapter({ payload }) {
   try {
@@ -258,7 +259,7 @@ function* goToChapter({ payload }) {
 
 ### ui部分
 
-看过上一个版本的兄弟应该知道，上一个版本使用了material-ui，楼主再次表示非常喜欢这套ui。但它实在是太重了，而我们希望这个项目是轻量且高效的，最后还是决定自行设计ui，工作量倒也不大。
+本想使用material-ui，但它实在是太重了，而我希望这个项目是轻量且高效的，最后还是决定自行设计ui。
 
 **首页**
 
@@ -268,16 +269,24 @@ function* goToChapter({ payload }) {
 
 从redux获取数据
 
+- src/routes/IndexPage/index.js
 ```javascript
-const { detail } = state.reader;
-const list = state.store;
-const store = Object.keys(list).map((id) => {
+function mapStateToProps(state) {
+  const { detail } = state.reader;
+  const list = state.store;
+  const store = Object.keys(list).map((id) => {
     // 找出书架上所有书籍的详细信息
     return list[id] ? list[id].detail : {};
-}).filter((i) => {
+  }).filter((i) => {
     // 过滤掉异常数据和当前阅读
     return i._id && i._id !== detail._id;
-});
+  });
+  return {
+    store,
+    // 如果是一本书都没有，推荐src/utils/recommond.js的第一个《斗破苍穹》
+    current: detail._id ? detail : recommend,
+  };
+}
 ```
 
 **阅读器**
@@ -286,21 +295,22 @@ const store = Object.keys(list).map((id) => {
 
 ok，扯了许久，终于见到本尊了，这是阅读器最核心的页面，谈不上有什么设计，就是追求简洁易用。
 
-主体部分就是原生的body，这样滚动起来会非常流畅。需要注意下api提供的数据如何显示在react中。代码很短，大意就是将换行符作为依据转换成数组显示，这样方便设置css样式。
+主体部分就是原生的`body`，这样滚动起来会非常流畅。需要注意下`api`提供的数据如何显示在`react`中。代码很短，大意就是将换行符作为依据转换成数组显示，这样方便设置css样式。
 
+- src/routes/Reader/Content.js
 ```javascript
 export default ({ content, style }) => (<div className={styles.content} style={style}>
   { content && content.split('\n').map(i => <p>{i}</p>) }
 </div>);
 ```
 
-稍微体验下可以发现，头部可收缩，显示当前书籍和当前章节，以及一个关闭按钮。基于react-headroom组件实现。
+稍微体验下可以发现，头部可收缩，显示当前书籍和当前章节，以及一个关闭按钮。基于`react-headroom`组件实现。
 
-为了追求简洁，我们把菜单放到了页面最下方，这样页面滚动到最下面点击下一章很方便，但如果只是想设置也必须滚动到最下面，这就有点不太方便了。
+为了追求简洁，我们把菜单做成一个可展开以及关闭的形式，点击右侧的按钮会在页面最下方显示出菜单，这样更方便随时可以查看下一章、上一章、章节列表、设置。
 
 菜单只有4个，设置、章节列表、上一章和下一章。点击设置会弹出框，支持换肤和调节字体大小，这些只是基本的，有时间再做亮度调节自动翻页和语音朗读吧。实现方法很简单，贴出这段代码你一定秒懂。
 
-
+- src/routes/Reader/Setting.js
 ```javascript
 this.stopEvent = (e) => {
       // 阻止合成事件间的冒泡
@@ -312,9 +322,11 @@ this.stopEvent = (e) => {
 };
 ```
 
-章节列表更（mei）加（you）简（yong）易（xin），稍微注意下如何将当前章节显示在列表中吧。我是利用锚点链接实现的，再配合一个sider组件，某修仙传几千章节跳转起来也很轻松。
+章节列表更（mei）加（you）简（yong）易（xin），稍微注意下如何将当前章节显示在列表中吧。我是利用锚点链接实现的，再配合一个`sider`组件，某修仙传几千章节跳转起来也很轻松。
 
+- src/routes/Chapters/index.js
 ```javascript
+// 滑动顶部进度条 sider
 this.skip = () => {
       setTimeout(() => {
         document.getElementById(this.range.value).scrollIntoView(false);
@@ -326,7 +338,7 @@ this.skip = () => {
 
 说起来很好实现，无非是先预设一套主题参数，需要哪个点那个。
 
-
+- src/utils/constants.js
 ```javascript
 export const COLORS = [
   {
@@ -350,52 +362,58 @@ export const COLORS = [
   },
 ];
 ```
-在redux中维护一个setting字段，专门放用户设置。在阅读器中获取并设置为主题即可。
+在`redux`中维护一个setting字段，专门放用户设置。在阅读器中获取并设置为主题即可。
 
+- src/routes/Reader/index.js
 ```javascript
 function mapStateToProps(state) {
-  const { chapter, currentChapter = 0, detail } = state.reader;
+  const { chapter, chapters, currentChapter = 0, detail, menuState } = state.reader;
   const { logs } = state.common;
   return {
     logs,
     chapter,
+    chapters,
     detail,
     currentChapter,
+    menuState,
     ...state.setting,
   };
 }
-```javascript
+```
+
 切换皮肤的时候将新的数据保存到redux就实现了换肤功能。
 
+- src/routes/Reader/Setting.js
 ```javascript
-// 换颜色
-this.setting = (key, val) => {
- this.props.dispatch({
-   type: 'setting/save',
-   payload: {
-     [key]: val,
-   },
- });
+// 设置主题颜色
+this.setThemeColor = (key, val) => {
+  this.props.dispatch({
+    type: 'setting/save',
+    payload: {
+      [key]: val,
+    },
+  });
 };
 // 调整字体大小
-this.setStyle = (num) => {
- const fontSize = this.props.style.fontSize + num;
- this.props.dispatch({
-   type: 'setting/save',
-   payload: {
-     style: {
-       ...this.props.style,
-       fontSize,
-     },
-   },
- });
+this.setFontSize = (num) => {
+  const fontSize = this.props.style.fontSize + num;
+  this.props.dispatch({
+    type: 'setting/save',
+    payload: {
+      style: {
+        ...this.props.style,
+        fontSize,
+      },
+    },
+  });
 };
 ```
 
 **删除实现**
 
-为了不再增加新的ui，决定使用长按删除。但是这个列表不仅需要支持长按和短按，还需要支持滚动，我又不想使用hammer.js这种重型库，只得手写了一个同时支持长按和短按的组件。凑合用吧，还能离咋地。
+为了不再增加新的ui，决定使用长按删除。但是这个列表不仅需要支持长按和短按，还需要支持滚动，我又不想使用`hammer.js`这种重型库，只得手写了一个同时支持长按和短按的组件。
 
+- src/components/Touch/index.js
 ```javascript
 export default ({ children, onPress, onTap }) => {
   let timeout;
@@ -435,7 +453,7 @@ export default ({ children, onPress, onTap }) => {
 };
 ```
 
-至于长按弹窗的ui我懒得设计了，短时间也做不出什么好的效果，还是继续使用sweet-alert2吧，这个插件着实不错。
+至于长按弹窗的ui我懒得设计了，短时间也做不出什么好的效果，还是继续使用`sweet-alert2`吧，这个插件着实不错。
 
 ![未标题-1-恢复的](http://ooi7vpwhj.bkt.clouddn.com/未标题-1-恢复的.jpg)
 
@@ -446,7 +464,7 @@ export default ({ children, onPress, onTap }) => {
 
 **移动端优化**
 
-```javascript
+```html
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -459,7 +477,7 @@ export default ({ children, onPress, onTap }) => {
 
 **css**
 
-```
+```css
 * {
     user-select: none;
     // 禁止用户选中文本
@@ -481,21 +499,26 @@ input {
 **fetch-polyfill**
 
 解决fetch浏览器不兼容问题
+- src/utils/request.js
 ```javascript
 import 'fetch-polyfill';
 ```
 
 **fastclick**
 
+如果 `viewport meta` 标签 中设置了 `width=device-width`， `Android` 上的 `Chrome 32+` 会禁用 300ms 延时。
+
+- myreader/src/router.js
 ```javascript
 import FastClick from 'fastclick';
 FastClick.attach(document.body);
 ```
 你懂得，移除移动端300毫秒延迟，不过这会带来其他问题，比如长按事件异常，滚动事件异常什么的。因为滑动touchmove触发了touchend事件，需要先取消掉touchstart上挂载的动作。
 
+
 **体积减小**
 
-在上一个版本中，项目打包后竟然有700k+，首次加载速度不忍直视。前面已经提到，放弃各种框架和动画之后，体积已经大幅减少。不过有react，react-router，redux，redux-saga这些依赖在，体积再小也小不到那里去。但好消息是我们可以使用preact替换react，从而节省约120kb左右。
+项目初期打包后竟然有700k+，首次加载速度不忍直视。前面已经提到，放弃各种框架和动画之后，体积已经大幅减少。不过有react，react-router，redux，redux-saga这些依赖在，体积再小也小不到那里去。但好消息是我们可以使用preact替换react，从而节省约120kb左右。
 
 只需要安装preact并设置别名即可。此处有几个小坑，一是别名的第三句，找了好久才在有个issue下发现，没有就无法运行。二是preact和react-hot-loader不太兼容，一起用会导致热更新失效。三是preact仍然有不兼容react的地方，需要仔细验证。
 
@@ -512,29 +535,28 @@ resolve: {
 },
 ```
 
-以及一系列优化以及gzip之后，项目index.js减小到了74kb，相比上一版只有十分之一大小。
+以及一系列优化以及gzip之后，项目index.js减小到了74kb，相比初期只有十分之一大小。
 
 ![](http://ooi7vpwhj.bkt.clouddn.com/15026220357728.jpg)
 
 **最后**
 
 项目中所有数据来自追书神器，非常感谢！！
-本项目仅作用于在实战中学习前端技术，请勿他用。下一步作者或许会做一个音乐播放器？有经验的小伙伴可以一起。github你懂得
+本项目仅作用于在实战中学习前端技术，请勿他用。
 
--------
+
+**线上环境**
+- 这里使用node环境做本地server，启动： node server.js & 
 
 在线地址：[myreader.linxins.com](myreader.linxins.com)
 
 github：https://github.com/liufulin90/myreader
 
-*大爷~  常来玩嘛，欢迎贡献代码哟~*
-
-
 
 ```
 cnpm i -D babel-core babel-eslint babel-loader babel-preset-es2015 babel-preset-stage-0 babel-preset-react webpack webpack-dev-server html-webpack-plugin eslint@^3.19.0 eslint-plugin-import eslint-loader eslint-config-airbnb eslint-plugin-jsx-a11y eslint-plugin-react babel-plugin-import file-loader babel-plugin-transform-runtime babel-plugin-transform-remove-console redux-devtools style-loader less-loader css-loader postcss-loader autoprefixer rimraf extract-text-webpack-plugin copy-webpack-plugin react-hot-loader@next less
 
-cnpm i -S react react-dom react-router react-router-dom redux react-redux redux-saga material-ui@next material-ui-icons
+cnpm i -S react react-dom react-router react-router-dom redux react-redux redux-saga material-ui@next material-ui-icons fetch-polyfill
 
 cnpm i -S preact preact-compat react-router react-router-dom redux react-redux redux-saga
 
@@ -546,6 +568,11 @@ proxy: {
   },
   '/chapter': {
     target: 'http://chapter2.zhuishushenqi.com/',
+    changeOrigin: true,
+    pathRewrite: { '^/api': '' },
+  },
+  '/agent': {
+    target: 'http://statics.zhuishushenqi.com/',
     changeOrigin: true,
     pathRewrite: { '^/api': '' },
   },
