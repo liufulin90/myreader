@@ -18,6 +18,7 @@ import Detail from './routes/Detail';
 import Reader from './routes/Reader';
 import Chapters from './routes/Chapters';
 import store from './store';
+import Loading from './routes/Loading';
 
 FastClick.attach(document.body);
 
@@ -31,6 +32,7 @@ const RouterConfig = () => (
         <Route path="/search" exact component={Search} />
         <Route path="/book/:id" exact component={Detail} />
         <Route path="/reader/:id" exact component={Reader} />
+        <Loading />
       </div>
     </Router>
   </Provider>

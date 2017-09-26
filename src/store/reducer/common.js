@@ -1,6 +1,7 @@
 const initState = {
   logs: ['日志开启'],   // 日志
-  currentBookId: '',
+  currentBookId: '',    // 当前书籍ID
+  loading: false,       // 网络请求加载中
 };
 
 function common(state = initState, action) {

@@ -30,6 +30,7 @@ function* getSource({ query }) {
       }
     }
     let { search: { detail } } = yield select();
+    yield put({ type: 'common/save', payload: { loading: true } });
     if (!detail._id) {
       console.log('详情不存在，前往获取');
       detail = yield call(readerServices.getDetail, id);
@@ -42,6 +43,7 @@ function* getSource({ query }) {
   } catch (error) {
     console.log(error);
   }
+  yield put({ type: 'common/save', payload: { loading: false } });
 }
 
 /**
@@ -74,6 +76,7 @@ function* getChapter() {
   try {
     const { reader: { chapters, currentChapter } } = yield select();
     const { link } = chapters[currentChapter || 0];
+    yield put({ type: 'common/save', payload: { loading: true } });
     const { chapter } = yield call(readerServices.getChapter, link);
     if (chapter) {
       console.log(`章节: ${chapter.title}`);
@@ -86,6 +89,7 @@ function* getChapter() {
   } catch (error) {
     console.log(error);
   }
+  yield put({ type: 'common/save', payload: { loading: false } });
 }
 
 /**
@@ -136,7 +140,6 @@ function* reStore({ payload }) {
   try {
     const { reader, store, setting } = payload;
     yield put({ type: 'reader/save', payload: { ...reader } });
-    // console.log(store);
     yield put({ type: 'store/save', payload: { ...store } });
     yield put({ type: 'setting/save', payload: { ...setting } });
   } catch (error) {
