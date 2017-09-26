@@ -1,6 +1,6 @@
-## MyReader
+## MyReader 绿色版电子书阅读器
 
-![main_all](https://github.com/liufulin90/myreader/screenshots/main_all.png)
+![main_all](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/main_all.png)
 
 在线地址：[http://myreader.linxins.com](http://myreader.linxins.com)
 
@@ -227,7 +227,7 @@ function* getNextSource() {
 ```
 效果如下，当1号书源出错后我们自动跳转到下一个书源，很方便有木有。
 
-![](http://ooi7vpwhj.bkt.clouddn.com/15026156458941.jpg)
+![retry](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/retry.jpg)
 
 **切换章节**
 
@@ -291,7 +291,7 @@ function mapStateToProps(state) {
 
 **阅读器**
 
-![未标题-1-恢复的](http://ooi7vpwhj.bkt.clouddn.com/未标题-1-恢复的.png)
+![reader_all](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/reader_all.png)
 
 ok，扯了许久，终于见到本尊了，这是阅读器最核心的页面，谈不上有什么设计，就是追求简洁易用。
 
@@ -455,7 +455,7 @@ export default ({ children, onPress, onTap }) => {
 
 至于长按弹窗的ui我懒得设计了，短时间也做不出什么好的效果，还是继续使用`sweet-alert2`吧，这个插件着实不错。
 
-![未标题-1-恢复的](http://ooi7vpwhj.bkt.clouddn.com/未标题-1-恢复的.jpg)
+![delete_all](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/delete_all.png)
 
 至此我们已经实现了全部功能和ui。
 
@@ -537,7 +537,7 @@ resolve: {
 
 以及一系列优化以及gzip之后，项目index.js减小到了74kb，相比初期只有十分之一大小。
 
-![](http://ooi7vpwhj.bkt.clouddn.com/15026220357728.jpg)
+![source_min](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/source_min.jpg)
 
 **最后**
 
@@ -579,6 +579,10 @@ proxy: {
 },
 ```
 
+## License
+(The MIT License)
+
+Copyright (c) 2016 [linxins](http://www.linxins.com) <liufulin90@163.com>
 
 
 
