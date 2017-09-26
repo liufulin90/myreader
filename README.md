@@ -1,10 +1,10 @@
-## myReader
+## MyReader
 
-![0813](http://ooi7vpwhj.bkt.clouddn.com/0813.png)
+![main_all](https://github.com/liufulin90/myreader/screenshots/main_all.png)
 
-在线地址：[myreader.linxins.com](http://myreader.linxins.com)
+在线地址：[http://myreader.linxins.com](http://myreader.linxins.com)
 
-github：[https://github.com/liufulin90/myreader](https://github.com/liufulin90/myreader)
+github：[myreader](https://github.com/liufulin90/myreader)
 
 -------
 
@@ -548,9 +548,9 @@ resolve: {
 **线上环境**
 - 这里使用node环境做本地server，启动： node server.js & 
 
-在线地址：[myreader.linxins.com](myreader.linxins.com)
+在线地址：[MyReader](http://myreader.linxins.com)
 
-github：https://github.com/liufulin90/myreader
+github：[myreader](https://github.com/liufulin90/myreader)
 
 
 ```
