@@ -4,6 +4,7 @@ import GaussianBlur from '../../components/GaussianBlur';
 
 import styles from './index.less';
 // import BackIcon from './back.svg';
+import ProgressLayer from '../../components/ProgressLayer';
 
 class Detail extends Component {
   constructor(props) {
@@ -25,6 +26,25 @@ class Detail extends Component {
       query: this.props.match.params,
     });
   }
+  componentWillReceiveProps(nextProps) {
+    const { downloadStatus, _id } = nextProps;
+    // 下载完成或当前书籍已经下载到书架中则跳转页面到阅读页
+    if (downloadStatus) {
+      this.readNow(_id);
+    }
+  }
+
+  /**
+   * 离线下载
+   * @param id
+   */
+  downloadNow = () => {
+    const { _id } = this.props;
+    this.props.dispatch({
+      type: 'reader/downGetSource',
+      query: { id: _id, download: true },
+    });
+  }
   render() {
     const {
       _id,
@@ -39,6 +59,8 @@ class Detail extends Component {
       latelyFollower,
       lastChapter,
       tags,
+      downloadStatus,
+      downloadPercent,
     } = this.props;
     return (<div>
       <GaussianBlur filter={50} src={cover}>
@@ -68,16 +90,19 @@ class Detail extends Component {
         </div>
         <p className={styles.last}>最新章节：{lastChapter}</p>
         <a className={styles.read} onClick={this.readNow.bind(this, _id)}>立即阅读</a>
+        <a className={styles.download} onClick={this.downloadNow}>{!downloadStatus ? '离线下载' : '已下载'}</a>
       </div>
-
+      {downloadPercent > 1 ? <ProgressLayer length={downloadPercent || 1} /> : ''}
     </div>);
   }
 }
 
 function mapStateToProps(state) {
   const { detail = {} } = state.search;
+  const { downloadPercent } = state.reader;
   return {
     ...detail,
+    downloadPercent,
   };
 }
 

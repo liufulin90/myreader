@@ -10,17 +10,21 @@ import styles from './index.less';
 class Search extends Component {
   constructor(props) {
     super(props);
-    this.readNow = (id) => {
-      this.props.dispatch({
-        type: 'reader/getSource',
-        query: { id },
-      });
-    };
     this.next = () => {
-      this.goToChapter(this.props.currentChapter + 1);
+      const { currentChapter, chapters } = this.props;
+      const page = currentChapter + 1;
+      const chaptersLen = chapters.length;
+      if (page === chaptersLen) {
+        return;
+      }
+      this.goToChapter(page);
     };
     this.prev = () => {
-      this.goToChapter(this.props.currentChapter - 1);
+      const { currentChapter } = this.props;
+      if (currentChapter <= 0) {
+        return;
+      }
+      this.goToChapter(currentChapter - 1);
     };
     this.goToChapter = (nextChapter) => {
       this.props.dispatch({

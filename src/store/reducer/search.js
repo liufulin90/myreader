@@ -1,5 +1,5 @@
 const initState = {
-  status: false,  // 获取书籍列表返回状态值
+  status: false,  // 获取书籍列表返回状态值 true: 检索列表不清空  false：检索列表清空
   list: [],   // 列表
   detail: {},   // 书籍详情
 };

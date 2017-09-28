@@ -13,9 +13,6 @@ class SearchBar extends Component {
       }
       e.preventDefault();
     };
-    this.cancel = () => {
-      this.props.history.goBack();
-    };
     this.onChange = () => {
       if (this.props.onChange) this.props.onChange(this.input.value);
     };
@@ -29,7 +26,7 @@ class SearchBar extends Component {
             <div className={styles.icon}>&nbsp;</div>
             <input type={type || 'search'} onChange={this.onChange} ref={(c) => { this.input = c; }} id="text" placeholder="输入关键字搜索" />
           </div>
-          <span className={styles.cancel} onClick={this.cancel}>取消</span>
+          <span className={styles.cancel} onClick={this.props.onClickCancle}>取消</span>
         </div>
       </form>
     );

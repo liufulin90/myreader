@@ -20,6 +20,7 @@ class Search extends Component {
       this.props.history.push(`/book/${id}`);
     };
   }
+
   componentWillMount() {
     const { status, list } = this.props;
     this.props.dispatch({
@@ -33,6 +34,22 @@ class Search extends Component {
   componentDidMount() {
     this.input.input.focus();
   }
+
+  /**
+   * 点击搜索框取消按钮
+   */
+  onClickCancle = () => {
+    // 将搜索列表清空
+    this.props.dispatch({
+      type: 'search/save',
+      payload: {
+        status: false,
+        list: [],
+      },
+    });
+    this.props.history.push('/');
+    window.scrollTo(0, 0);
+  }
   renderList = (list, status) => {
     if (status && !list.length) {
       return (<div style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.5)' }}>哦噢，没找到你想要的呢 ╮(￣▽￣)╭ </div>);
@@ -44,7 +61,12 @@ class Search extends Component {
   render() {
     const { list = [], status, history } = this.props;
     return (<div>
-      <SearchBar ref={(c) => { this.input = c; }} history={history} onSubmit={this.search} />
+      <SearchBar
+        ref={(c) => { this.input = c; }}
+        history={history}
+        onSubmit={this.search}
+        onClickCancle={this.onClickCancle}
+      />
       {this.renderList(list, status)}
     </div>);
   }
