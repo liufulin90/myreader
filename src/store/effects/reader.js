@@ -77,7 +77,7 @@ function* getChapter() {
     const { reader: { chapters, currentChapter,
       downloadStatus, chaptersContent } } = yield select();
 
-    if (downloadStatus) { // 已下载
+    if (downloadStatus) { // 已下载直接从本地获取
       const chapter = chaptersContent[currentChapter || 0];
       console.log(`章节: ${chapter.title}`);
       yield put({ type: 'reader/save', payload: { chapter } });
@@ -145,6 +145,10 @@ function* getNextSource() {
   }
 }
 
+/**
+ * 本地存储调用
+ * @param payload
+ */
 function* reStore({ payload }) {
   try {
     const { reader, store, setting } = payload;
@@ -155,7 +159,10 @@ function* reStore({ payload }) {
     console.log(error);
   }
 }
-
+/**
+ * 菜单伸缩
+ * @param payload
+ */
 function* changeMenu({ payload }) {
   yield put({ type: 'reader/save', payload: { menuState: payload.menuState } });
 }

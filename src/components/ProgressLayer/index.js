@@ -7,12 +7,8 @@ import styles from './index.less';
 
 const ProgressLayer = ({ length }) => {
   const widths = `${length}%`;
-  return (<div className={styles.progressWrap}>
-    <div className={styles.progressBody}>
-      <div className={styles.progress} style={{ width: widths }} >
-        &nbsp;
-      </div>
-    </div>
+  return (<div className={styles.progressBody}>
+    <div className={styles.progress} style={{ width: widths }} >&nbsp;</div>
   </div>);
 };
 

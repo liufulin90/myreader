@@ -60,7 +60,7 @@ export default reader;
 
 为此，我们可以模仿现实中的书架来实现这个功能：前面提到的reader是当前正在阅读的书籍，它是完整的包含了一本书籍所有信息的个体，而书架则是很多个这样的个体的集合。因此切换书籍的动作，其实就是将书籍放回书架，再从书架中拿出一本书的过程，如果在书架中找到了这本书，便直接取出，进而得到上次阅读这本书的全部数据，如果没有找到这本书，就从服务器获取并初始化阅读器。
 
-- src/store/reducer/reader.js
+- src/store/reducer/store.js
 ```javascript
 function store(state = {}, action) {
   switch (action.type) {
@@ -138,6 +138,7 @@ function* getSource({ query }) {
       }
     }
     let { search: { detail } } = yield select();
+    yield put({ type: 'common/save', payload: { loading: true } });
     if (!detail._id) {
       console.log('详情不存在，前往获取');
       detail = yield call(readerServices.getDetail, id);
@@ -150,6 +151,7 @@ function* getSource({ query }) {
   } catch (error) {
     console.log(error);
   }
+  yield put({ type: 'common/save', payload: { loading: false } });
 }
 ```
 
@@ -158,9 +160,13 @@ function* getSource({ query }) {
 
 - src/store/effects/reader.js
 ```javascript
+/**
+ * 章节列表
+ */
 function* getChapterList() {
   try {
     const { reader: { source, currentSource } } = yield select();
+    console.log('获取章节列表', currentSource, source.length, JSON.stringify(source));
     if (currentSource >= source.length) {
       console.log('走到这里说明所有书源都已经切换完了');
       yield put({ type: 'reader/save', payload: { currentSource: 0 } });
@@ -177,22 +183,36 @@ function* getChapterList() {
   }
 }
 
+/**
+ * 获取章节内容
+ */
 function* getChapter() {
   try {
-    const { reader: { chapters, currentChapter } } = yield select();
-    const { link } = chapters[currentChapter || 0];
-    const { chapter } = yield call(readerServices.getChapter, link);
-    if (chapter) {
+    const { reader: { chapters, currentChapter,
+      downloadStatus, chaptersContent } } = yield select();
+
+    if (downloadStatus) { // 已下载直接从本地获取
+      const chapter = chaptersContent[currentChapter || 0];
       console.log(`章节: ${chapter.title}`);
       yield put({ type: 'reader/save', payload: { chapter } });
       window.scrollTo(0, 0);
     } else {
-      console.log('章节获取失败');
-      yield getNextSource();
+      const { link } = chapters[currentChapter || 0];
+      yield put({ type: 'common/save', payload: { loading: true } });
+      const { chapter } = yield call(readerServices.getChapter, link);
+      if (chapter) {
+        console.log(`章节: ${chapter.title}`);
+        yield put({ type: 'reader/save', payload: { chapter } });
+        window.scrollTo(0, 0);
+      } else {
+        console.log('章节获取失败');
+        yield getNextSource();
+      }
     }
   } catch (error) {
     console.log(error);
   }
+  yield put({ type: 'common/save', payload: { loading: false } });
 }
 ```
 
@@ -254,7 +274,121 @@ function* goToChapter({ payload }) {
   }
 }
 ```
+### 离线下载
 
+考虑到节约流量问题，获取一个可用的书源后对每个章节去下载相应的章节内容，然后存储在本地(chaptersContent)。
+- src/store/effects/reader.js
+```javascript
+/**
+ * 离线下载书籍 获取书源
+ * @param query
+ */
+function* downGetSource({ query }) {
+  try {
+    const { id, download } = query;
+    // 这里获得整个缓存中的store，并对应上reader的store。其reader的store结构参考store/reducer/reader.js initState
+    // 同时获取该书是否下载的状态
+    const { reader: { id: currentId, detail: { title } } } = yield select();
+    console.log(`当前书信息currentId:${currentId} , id:${id}, title:${title}`);
+    if (download) {
+      const judgeRet = yield findBookByStoreId(id);
+      console.log('判断返回的结果：', judgeRet);
+      if (judgeRet.has && judgeRet.downloadStatus) {
+        console.log('已下载,直接阅读');
+        yield put({ type: 'reader/save', payload: { downloadStatus: true } });
+        return;
+      }
+
+      yield put({ type: 'common/save', payload: { loading: true } });
+      let { search: { detail } } = yield select();
+      if (!detail._id) {
+        console.log('下载时详情不存在，前往获取');
+        detail = yield call(readerServices.getDetail, id);
+      }
+      // 获得的所有书源
+      const sourceList = yield call(readerServices.getSource, id);
+      let sourceIndex = 0; // 标记书源当前脚标
+      let chapterList = []; // 初始化可用章节列表
+      // 循环获得一个可用的书源，达到自动换源的效果
+      for (let i = 0, len = sourceList.length; i < len; i += 1) {
+        if (sourceList[i].name !== '优质书源') {
+          const { chapters } = yield call(readerServices.getChapterList, sourceList[i]._id);
+          if (chapters.length) {
+            const { chapter, ok } = yield call(readerServices.getChapter, chapters[i].link);
+            if (ok && chapter) {
+              console.log(`成功获取一个书源 index: ${sourceIndex} 章节总数 ${chapters.length}`);
+              console.log('要下载的书源', sourceList[sourceIndex]);
+              // 成功获取一个书源，并将相关信息先存下来
+              yield put({ type: 'reader/save', payload: { source: sourceList, id, detail, chapters, chapter, downloadPercent: 0, currentSource: sourceIndex, currentChapter: 0 } });
+              chapterList = chapters;
+              break;
+            }
+          }
+        }
+        sourceIndex += 1;
+      }
+      // 开始循环章节获得章节内容，并保存在本地
+      const chaptersContent = []; // 章节列表及其内容
+      for (let i = 0, len = chapterList.length; i < len; i += 1) {
+        const { chapter } = yield call(readerServices.getChapter, chapterList[i].link);
+        chaptersContent[i] = chapter;
+        // 添加下载进度
+        yield put({ type: 'reader/save', payload: { downloadPercent: (i / len) * 100 } });
+      }
+      // 取消下载进度
+      yield put({ type: 'reader/save', payload: { downloadPercent: 0 } });
+
+      console.log('保存的章节内容', chaptersContent);
+      yield put({ type: 'reader/save', payload: { chaptersContent } });
+
+      // 没有下载
+      if (!judgeRet.downloadStatus) {
+        const { reader, store: { [id]: book }, search: { detail: searchDetail } } = yield select();
+        reader.downloadStatus = true; // 设定已下载
+        console.log('将书籍存入书架');
+        yield put({ type: 'store/put', payload: { ...reader }, key: id });
+        yield put({ type: 'reader/clear' });
+        if (book && book.detail && book.source) { // 如果原书架中有对应的书则取出，否则用当前的书
+          console.log(`从书架取回《${book.detail.title}》`);
+          yield put({ type: 'reader/save', payload: { ...book } });
+        } else {
+          console.log('原书架没书，用当前书');
+          yield put({ type: 'reader/save', payload: { ...reader } });
+        }
+        searchDetail.downloadStatus = true;
+        yield put({ type: 'search/save', payload: { searchDetail } });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  yield put({ type: 'common/save', payload: { loading: false } });
+}
+```
+
+### 本地存储 redux-persist
+这里咱们使用了 `redux-persist` 来做本地存储，非常方便，redux先关数据自动存储和获取
+- src/store/effects/reader.js
+```javascript
+import { REHYDRATE } from 'redux-persist/constants';
+/**
+ * 本地存储调用
+ * @param payload
+ */
+function* reStore({ payload }) {
+  try {
+    const { reader, store, setting } = payload;
+    yield put({ type: 'reader/save', payload: { ...reader } });
+    yield put({ type: 'store/save', payload: { ...store } });
+    yield put({ type: 'setting/save', payload: { ...setting } });
+  } catch (error) {
+    console.log(error);
+  }
+}
+export default [
+  takeLatest(REHYDRATE, reStore),
+];
+```
 以上基本上已经完整实现了阅读器的核心部分，至于搜索和详情页，限于篇幅不再赘述。
 
 ### ui部分
@@ -535,9 +669,8 @@ resolve: {
 },
 ```
 
-以及一系列优化以及gzip之后，项目index.js减小到了74kb，相比初期只有十分之一大小。
+以及一系列优化以及gzip之后，项目index.js减小到了240kb，相比初期只有十分之一大小。
 
-![source_min](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/source_min.jpg)
 
 **最后**
 

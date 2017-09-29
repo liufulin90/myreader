@@ -92,7 +92,9 @@ class Detail extends Component {
         <a className={styles.read} onClick={this.readNow.bind(this, _id)}>立即阅读</a>
         <a className={styles.download} onClick={this.downloadNow}>{!downloadStatus ? '离线下载' : '已下载'}</a>
       </div>
-      {downloadPercent > 1 ? <ProgressLayer length={downloadPercent || 1} /> : ''}
+      {
+        downloadPercent > 1 ? (<div className={styles.progressWrap}><ProgressLayer length={downloadPercent || 1} /></div>) : ''
+      }
     </div>);
   }
 }

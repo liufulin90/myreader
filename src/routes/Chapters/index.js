@@ -33,9 +33,13 @@ class Chapters extends Component {
     };
   }
   componentDidMount() {
+    const { chapters, currentChapter } = this.props;
+    const chapterLen = chapters.length;
+    let id = currentChapter + 7;
+    id = id >= chapterLen ? chapterLen - 1 : id;
     setTimeout(() => {
       try {
-        document.getElementById(`${(this.props.currentChapter + 7) || 0}`).scrollIntoView(false);
+        document.getElementById(`${id || 0}`).scrollIntoView(false);
       } catch (error) {
         console.log(error);
       }
@@ -51,6 +55,7 @@ class Chapters extends Component {
             min: 0,
             step: 1,
             onChange: this.skip,
+            defaultValue: currentChapter,
             ref: (c) => { this.range = c; },
           }}
         />

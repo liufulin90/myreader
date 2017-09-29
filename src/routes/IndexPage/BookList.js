@@ -28,6 +28,8 @@ export default ({ list = [], history, dispatch }) => {
         `已从书架移除《${title}》`,
         'success',
       );
+    }).catch((e) => {
+      console.log(e);
     });
   }
   return (
