@@ -13,7 +13,7 @@ github：[myreader](https://github.com/liufulin90/myreader)
 - [书架](#书架)
 > effects 的逻辑处理
 - [获取书源](#获取书源)
-- [章节列表 & 章节内容](#章节列表&章节内容)
+- [章节列表 & 章节内容](#章节列表-章节内容)
 - [换源实现](#换源实现)
 - [切换章节](#切换章节)
 - [离线下载](#离线下载)
@@ -25,7 +25,7 @@ github：[myreader](https://github.com/liufulin90/myreader)
 - [删除实现](#删除实现)
 > 优化
 - [移动端优化](#移动端优化)
-- [CSS](#CSS)
+- [CSS](#css)
 - [fetch-polyfill](#fetch-polyfill)
 - [fastclick](#fastclick)
 - [体积减小](#体积减小)
@@ -180,7 +180,7 @@ function* getSource({ query }) {
 }
 ```
 
-#### 章节列表 & 章节内容
+#### 章节列表-章节内容
 
 获取章节列表和章节内容比较简单，只需稍稍做些异常情况的处理即可。
 
@@ -392,7 +392,7 @@ function* downGetSource({ query }) {
 }
 ```
 
-#### 本地存储 redux-persist
+#### 本地存储redux-persist
 
 这里咱们使用了 `redux-persist` 来做本地存储，非常方便，redux先关数据自动存储和获取
 - src/store/effects/reader.js
