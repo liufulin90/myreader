@@ -1,7 +1,7 @@
 {
   "name": "myReader",
   "version": "1.0.0",
-  "description": "",
+  "description": "基于React实现的【绿色版电子书阅读器】，可以免费看任何小说，支持离线下载",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

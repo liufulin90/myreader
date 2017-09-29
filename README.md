@@ -7,6 +7,31 @@
 github：[myreader](https://github.com/liufulin90/myreader)
 
 -------
+## 目录索引
+> store的设计与实现
+- [阅读器](#阅读器)
+- [书架](#书架)
+> effects 的逻辑处理
+- [获取书源](#获取书源)
+- [章节列表 & 章节内容](#章节列表&章节内容)
+- [换源实现](#换源实现)
+- [切换章节](#切换章节)
+- [离线下载](#离线下载)
+- [本地存储 redux-persist](#本地存储redux-persist)
+> UI部分
+- [首页](#首页)
+- [阅读器](#阅读器)
+- [换肤](#换肤)
+- [删除实现](#删除实现)
+> 优化
+- [移动端优化](#移动端优化)
+- [CSS](#CSS)
+- [fetch-polyfill](#fetch-polyfill)
+- [fastclick](#fastclick)
+- [体积减小](#体积减小)
+> 最后
+- [后记](#后记)
+- [线上环境](#线上环境)
 
 ### 开始
 
@@ -21,7 +46,7 @@ github：[myreader](https://github.com/liufulin90/myreader)
 reader代表阅读器和当前书籍，这里我们跳过优质书源，原因大家都懂。
 ╮(￣▽￣)╭
 
-**阅读器**
+#### 阅读器
 
 - src/store/reducer/reader.js
 ```javascript
@@ -54,7 +79,7 @@ function reader(state = initState, action) {
 export default reader;
 ```
 
-**书架**
+#### 书架
 
 因为我们并不是要做只能阅读一本书的鸡肋，我们要的是能在多本书籍之间快速切换，不但能够保存阅读进度（当前书源和当前章节），并且可以在缓存中读取数据，过滤掉那些不必要的服务器请求。
 
@@ -109,7 +134,7 @@ export default store;
 
 需要注意的一点是，项目本质上是web应用，用户可能从url进入任意页面，所以要做好异常情况的处理，例如没有书籍详情等。
 
-**获取书源**
+#### 获取书源
 
 - src/store/effects/reader.js
 ```javascript
@@ -155,7 +180,8 @@ function* getSource({ query }) {
 }
 ```
 
-**章节列表 & 章节内容**
+#### 章节列表 & 章节内容
+
 获取章节列表和章节内容比较简单，只需稍稍做些异常情况的处理即可。
 
 - src/store/effects/reader.js
@@ -216,7 +242,7 @@ function* getChapter() {
 }
 ```
 
-**换源实现**
+#### 换源实现
 
 同是核心功能，这个必须有。换源其实非常简单，做一个智（sha）能（gua）换源吧（根据书源获取`具体章节`，如果获取不到就拿下一个书源再获取`其具体章节`，直到获取到正确的为止）。
 
@@ -249,7 +275,7 @@ function* getNextSource() {
 
 ![retry](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/retry.jpg)
 
-**切换章节**
+#### 切换章节
 
 非常简单，稍微做下异常处理就好。
 
@@ -274,7 +300,7 @@ function* goToChapter({ payload }) {
   }
 }
 ```
-### 离线下载
+#### 离线下载
 
 考虑到节约流量问题，获取一个可用的书源后对每个章节去下载相应的章节内容，然后存储在本地(chaptersContent)。
 - src/store/effects/reader.js
@@ -366,7 +392,8 @@ function* downGetSource({ query }) {
 }
 ```
 
-### 本地存储 redux-persist
+#### 本地存储 redux-persist
+
 这里咱们使用了 `redux-persist` 来做本地存储，非常方便，redux先关数据自动存储和获取
 - src/store/effects/reader.js
 ```javascript
@@ -391,11 +418,11 @@ export default [
 ```
 以上基本上已经完整实现了阅读器的核心部分，至于搜索和详情页，限于篇幅不再赘述。
 
-### ui部分
+### UI部分
 
 本想使用material-ui，但它实在是太重了，而我希望这个项目是轻量且高效的，最后还是决定自行设计ui。
 
-**首页**
+#### 首页
 
 首页比较纠结，曾经放了很多自以为炫酷的高斯模糊和动画，但过多的效果会降低体验，最终还是选择了走了简洁的路子。
 
@@ -423,7 +450,7 @@ function mapStateToProps(state) {
 }
 ```
 
-**阅读器**
+#### 阅读器
 
 ![reader_all](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/reader_all.png)
 
@@ -468,7 +495,7 @@ this.skip = () => {
  }
 ```
 
-**换肤**
+#### 换肤
 
 说起来很好实现，无非是先预设一套主题参数，需要哪个点那个。
 
@@ -543,7 +570,7 @@ this.setFontSize = (num) => {
 };
 ```
 
-**删除实现**
+#### 删除实现
 
 为了不再增加新的ui，决定使用长按删除。但是这个列表不仅需要支持长按和短按，还需要支持滚动，我又不想使用`hammer.js`这种重型库，只得手写了一个同时支持长按和短按的组件。
 
@@ -596,7 +623,7 @@ export default ({ children, onPress, onTap }) => {
 
 ### 优化
 
-**移动端优化**
+#### 移动端优化
 
 ```html
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
@@ -609,7 +636,7 @@ export default ({ children, onPress, onTap }) => {
 <link rel="apple-touch-icon" href="icon.png"/>
 ```
 
-**css**
+#### CSS
 
 ```css
 * {
@@ -630,7 +657,7 @@ input {
 }
 ```
 
-**fetch-polyfill**
+#### fetch-polyfill
 
 解决fetch浏览器不兼容问题
 - src/utils/request.js
@@ -638,7 +665,7 @@ input {
 import 'fetch-polyfill';
 ```
 
-**fastclick**
+#### fastclick
 
 如果 `viewport meta` 标签 中设置了 `width=device-width`， `Android` 上的 `Chrome 32+` 会禁用 300ms 延时。
 
@@ -650,7 +677,7 @@ FastClick.attach(document.body);
 你懂得，移除移动端300毫秒延迟，不过这会带来其他问题，比如长按事件异常，滚动事件异常什么的。因为滑动touchmove触发了touchend事件，需要先取消掉touchstart上挂载的动作。
 
 
-**体积减小**
+#### 体积减小
 
 项目初期打包后竟然有700k+，首次加载速度不忍直视。前面已经提到，放弃各种框架和动画之后，体积已经大幅减少。不过有react，react-router，redux，redux-saga这些依赖在，体积再小也小不到那里去。但好消息是我们可以使用preact替换react，从而节省约120kb左右。
 
@@ -672,13 +699,14 @@ resolve: {
 以及一系列优化以及gzip之后，项目index.js减小到了240kb，相比初期只有十分之一大小。
 
 
-**最后**
+### 最后
+#### 后记
 
 项目中所有数据来自追书神器，非常感谢！！
+喜欢的同学可以`star`哦，欢迎提出建议。
 本项目仅作用于在实战中学习前端技术，请勿他用。
 
-
-**线上环境**
+#### 线上环境
 - 这里使用node环境做本地server，启动： node server.js & 
 
 在线地址：[MyReader](http://myreader.linxins.com)
@@ -715,7 +743,7 @@ proxy: {
 ## License
 (The MIT License)
 
-Copyright (c) 2016 [linxins](http://www.linxins.com) <liufulin90@163.com>
+Copyright (c) 2017 [linxins](http://www.linxins.com) <liufulin90@163.com>
 
 
 
