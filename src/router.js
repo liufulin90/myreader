@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
+  HashRouter as Router, // 使用hash路由解决一些页面无法刷新问题
   Route,   // 这是基本的路由块
   // Link,    // 这是a标签/
   // Switch,   // 这是监听空路由的
