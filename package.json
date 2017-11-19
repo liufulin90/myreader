@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --config webpack.dev.config.js --hot --inline --progress",
-    "dev": "webpack-dev-server --config webpack.dev.config.js --hot --inline --progress",
+    "dev": "webpack-dev-server --config webpack.dev.config.js --hot --inline --progress --open",
     "build": "rimraf dist && webpack -p --colors --profile --display-error-details --display-modules --progress",
     "dll": "rimraf dll && webpack --config webpack.dll.config.js -p"
   },
