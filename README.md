@@ -4,7 +4,7 @@
 
 在线地址：[http://myreader.linxins.com](http://myreader.linxins.com)
 
-github：[myreader](https://github.com/liufulin90/myreader)
+手机扫码体验：![online-qrcode](https://raw.githubusercontent.com/liufulin90/myreader/master/screenshots/myreader-online-qrcode.png)
 
 -------
 ## 目录索引
