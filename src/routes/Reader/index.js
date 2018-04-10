@@ -100,7 +100,7 @@ class Search extends Component {
       >+
       </div>
       <div className={menuState ? styles.ballWrap : styles.ballWrapClose}>
-        <span onClick={this.goToChapters} className={styles.ball}>章节列表</span>
+        <span onClick={this.goToChapters} className={styles.ball}>章节<br />列表</span>
         <span
           onClick={this.prev}
           className={currentChapter < 1 ? styles.ballPreOff : styles.ballPreOn}
